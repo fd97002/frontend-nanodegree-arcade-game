@@ -54,13 +54,41 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
     // initial location
-    this.x = 100;
-    this.y = 50;
+    this.generateLoc();
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/char-horn-girl.png';
+    this.sprite = 'images/char-cat-girl.png';
 };
 
+// Generates random position for player bot when it is born
+Player.prototype.generateLoc = function(){
+    var rowheight = 83;
+    var verticalCorrection = 33;
+    var topMargin = 60;
+    
+    this.playerHeight = 78;
+    this.playerWidth = 101;
+
+    var randomcol = (Math.floor(Math.random() * 5) + 1);
+   
+    this.x = 101 * randomcol;
+    this.y = rowheight*6-verticalCorrection-this.playerHeight;
+    this.trueY= this.y + topMargin;
+    console.log("Bug Position "+ this.x + ", "+this.y);
+};
+
+Player.prototype.update = function(dt) {
+
+};
+
+// Draw the player on the screen, required method for game
+Player.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    //ctx.strokeStyle="red";
+    //ctx.rect(this.x, this.trueY, this.playerWidth, this.playerHeight);
+    //ctx.stroke();
+    //console.log(this.x, this.y, this.playerWidth, this.playerHeight);
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
