@@ -115,8 +115,14 @@ var Engine = (function(global) {
             }
         });
         if(collisionState === true)
+        {
+            player.resetPosition();
+            return;
+        }
+        if(player.polePosition() === true){
             player.resetPosition();
         }
+    }
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every

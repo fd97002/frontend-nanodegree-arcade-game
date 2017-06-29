@@ -1,8 +1,11 @@
-//TODO: Collision Detection Needs to Happem
 //TODO: Restrict Player movement at boundaries
-//TODO: Winning condition
 //TODO: Add more artifacts & Points Scoring capabilities
 
+
+var score = {
+    player : 0,
+    bug : 0
+};
 
 //*********************** SPRITE ************************************
 var Sprite = function(path, isBugSprite){
@@ -49,7 +52,7 @@ Enemy.prototype.generateLoc = function(){
     
     this.x = 0;
     this.y = this.sprite.rowheight*(randomrow+1)-this.sprite.verticalCorrection-this.sprite.bugHeight;
-    //console.log("Bug Position "+ this.x + ", "+this.y);
+    console.log("Bug Position "+ this.x + ", "+this.y);
 };
 
 Enemy.prototype.computeBounds = function(){
@@ -70,7 +73,7 @@ Enemy.prototype.update = function(dt) {
     if(this.x > 506)
     {
         //console.log("Bug Position "+ this.x + ", "+this.y);
-        this.generateLoc();
+        this.x = 0;
     }
     this.computeBounds();
 };
@@ -140,6 +143,13 @@ Player.prototype.resetPosition = function(){
     //console.log("Bug Position "+ this.x + ", "+this.y);
 };
 
+Player.prototype.polePosition = function(){
+    //console.log(this.bottomRightY);
+    if (this.bottomRightY < 130){
+        return true;
+    }
+}
+
 
 Player.prototype.computeBounds = function(){
     this.topLeftX = this.x;
@@ -166,16 +176,19 @@ Player.prototype.render = function() {
 Player.prototype.handleInput = function(e) {
     switch (e) {
         case 'left':
-            this.x -= 20;
+            if(this.x>20)
+                this.x -= 20;
             break;
         case 'right':
-            this.x += 20;
+            if((this.x + this.sprite.playerWidth)<486)
+                this.x += 20;
             break;
         case 'up':
             this.y -= 25;
             break;
         case 'down':
-            this.y += 25;
+            if(this.bottomRightY < 570)
+                this.y += 25;
             break;
         case 'space':
             paused = paused ? false : true;
@@ -190,8 +203,10 @@ Player.prototype.handleInput = function(e) {
 // Place all enemy objects in an array called allEnemies
 var enemy0 = new Enemy();
 var enemy1 = new Enemy();
+var enemy2 = new Enemy();
+var enemy3 = new Enemy();
 
-var allEnemies = [enemy0, enemy1];
+var allEnemies = [enemy0, enemy1, enemy2, enemy3];
 
 // Place the player object in a variable called player
 var player = new Player();
