@@ -23,6 +23,8 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
+        collisionState = false,
+        paused = false,
         lastTime;
 
     canvas.width = 505;
@@ -79,8 +81,9 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        updateEntities(dt);
-        // checkCollisions();
+        if(global.paused === false)
+            updateEntities(dt);
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -96,6 +99,24 @@ var Engine = (function(global) {
         });
         player.update();
     }
+
+    /* This is called by the update function and loops through all of the
+     * objects within your allEnemies array as defined in app.js and calls
+     * their update() methods. It will then call the update function for your
+     * player object. These update methods should focus purely on updating
+     * the data/properties related to the object. Do your drawing in your
+     * render methods.
+     */
+    function checkCollisions() {
+        collisionState = false;
+        allEnemies.forEach(function(enemy) {
+            if(enemy.checkCollision (player) === true){
+                collisionState = true;
+            }
+        });
+        if(collisionState === true)
+            player.resetPosition();
+        }
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -171,7 +192,7 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png',
+        'images/char-boy.png',  
         'images/char-cat-girl.png'
     ]);
     Resources.onReady(init);
@@ -181,4 +202,5 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+    global.paused = paused;
 })(this);
