@@ -5,33 +5,59 @@
 //TODO: Winning condition
 //TODO: Add more artifacts & Points Scoring capabilities
 
+//*********************** SPRITE ************************************
+var Sprite = function(path, isBugSprite){
+    if(isBugSprite === true)
+    {
+        this.rowheight  = 83;
+        this.verticalCorrection = 25;
+        this.topMargin  = 71;
+
+        this.bugHeight  = 75;
+        this.bugWidth   = 101;
+    }
+    else
+    {
+        this.rowheight = 83;
+        this.verticalCorrection = 33;
+        this.topMargin = 60;
+    
+        this.playerHeight = 78;
+        this.playerWidth = 101;
+
+    }
+    this.path       = path;
+}
+
 //*********************** ENEMY **************************************
 // Enemies our player must avoid
 var Enemy = function() {
+    // The image/sprite for our enemies, this uses
+    // a helper we've provided to easily load images
+    this.sprite = new Sprite('images/enemy-bug.png', true);
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.generateLoc();
     
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
-};
+    };
 
 //
 Enemy.prototype.generateLoc = function(){
-    var rowheight = 83;
-    var verticalCorrection = 25;
-    var topMargin = 71;
+
     var randomrow = (Math.floor(Math.random() * 3) + 1);
     
-    this.bugHeight = 75;
-    this.bugWidth = 101;
-
     this.x = 0;
-    this.y = rowheight*(randomrow+1)-verticalCorrection-this.bugHeight;
-    this.trueY= this.y + topMargin;
+    this.y = this.sprite.rowheight*(randomrow+1)-this.sprite.verticalCorrection-this.sprite.bugHeight;
     console.log("Bug Position "+ this.x + ", "+this.y);
 };
+
+Enemy.prototype.computeBounds = function(){
+    this.topLeftX = this.x;
+    this.topLeftY = this.y + this.sprite.topMargin;
+    this.bottomRightX= this.topLeftX + this.sprite.playerWidth;
+    this.bottomRightY = this.topLeftY + this.sprite.playerHeight; 
+}
+
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
@@ -45,14 +71,15 @@ Enemy.prototype.update = function(dt) {
         console.log("Bug Position "+ this.x + ", "+this.y);
         this.generateLoc();
     }
+    this.computeBounds();
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite.path), this.x, this.y);
     ctx.beginPath();
     ctx.strokeStyle="red";
-    ctx.rect(this.x, this.trueY, this.bugWidth, this.bugHeight);
+    ctx.rect(this.topLeftX, this.topLeftY, this.sprite.bugWidth, this.sprite.bugHeight);
     ctx.stroke();
     //console.log(this.x, this.y, this.bugWidth, this.bugHeight);
 };
@@ -63,35 +90,29 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-    // initial location
-    this.resetPosition();
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-    this.sprite = 'images/char-cat-girl.png';
+    this.sprite = new Sprite('images/char-cat-girl.png', false);
+    // initial location
+    this.resetPosition();
 };
 
 // Generates random position for player bot when it is born
 Player.prototype.resetPosition = function(){
-    var rowheight = 83;
-    var verticalCorrection = 33;
-    this.topMargin = 60;
-    
-    this.playerHeight = 78;
-    this.playerWidth = 101;
-
-    var randomcol = (Math.floor(Math.random() * 5) + 1);
+  
+    var randomcol = (Math.floor(Math.random() * 4) + 1);
    
     this.x = 101 * randomcol;
-    this.y = rowheight*6-verticalCorrection-this.playerHeight;
+    this.y = this.sprite.rowheight*6-this.sprite.verticalCorrection-this.sprite.playerHeight;
     console.log("Bug Position "+ this.x + ", "+this.y);
 };
 
 
 Player.prototype.computeBounds = function(){
     this.topLeftX = this.x;
-    this.topLeftY = this.y + this.topMargin;
-    this.bottomRightX= this.topLeftX + this.playerWidth;
-    this.bottomRightY = this.topLeftY + this.playerHeight; 
+    this.topLeftY = this.y + this.sprite.topMargin;
+    this.bottomRightX= this.topLeftX + this.sprite.playerWidth;
+    this.bottomRightY = this.topLeftY + this.sprite.playerHeight; 
 }
 
 Player.prototype.update = function(dt) {
@@ -100,10 +121,10 @@ Player.prototype.update = function(dt) {
 
 // Draw the player on the screen, required method for game
 Player.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.drawImage(Resources.get(this.sprite.path), this.x, this.y);
     ctx.beginPath();
     ctx.strokeStyle="yellow";
-    ctx.rect(this.topLeftX, this.topLeftY, this.playerWidth, this.playerHeight);
+    ctx.rect(this.topLeftX, this.topLeftY, this.sprite.playerWidth, this.sprite.playerHeight);
     ctx.stroke();
     //console.log(this.x, this.y, this.playerWidth, this.playerHeight);
 };
